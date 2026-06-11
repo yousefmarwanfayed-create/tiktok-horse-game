@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سباق الخيول التفاعلي - TikTok Live</title>
+
+    <style>
+        /* ============== أنماط الميداليات ============== */
+        .medals-wrapper {
+            position: fixed;
+            z-index: 1000;
+            pointer-events: none;
+            width: fit-content;
+            height: fit-content;
+        }
+
+        .medals-container {
+            display: flex;
+            gap: 20px;
+            background-color: #000;
+            padding: 20px;
+            justify-content: center;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            transform-origin: top left;
+            width: fit-content;
+            height: fit-content;
+            flex-direction: row-reverse;
+        }
+
+        .card {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 2px solid;
+            color: white;
+            font-family: sans-serif;
+            font-weight: bold;
+            font-size: 24px;
+            direction: ltr;
+        }
+
+        .gold { border-color: #ffc107; background: #332d1d; }
+        .silver { border-color: #adb5bd; background: #333; }
+        .bronze { border-color: #a0522d; background: #3d2b21; }
+
+        .medal { margin-right: 10px; width: 30px; }
+        .flag-icon { width: 40px; margin: 0 10px; border-radius: 4px; }
+        .crown { margin-left: 15px; width: 25px; }
+
+        /* ============== أنماط السباق ============== */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #010305;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #010305;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 1.5px;
+            height: 1.5px;
+            background: #ffffff;
+            border-radius: 50%;
+            opacity: 0;
+            will-change: opacity;
+            transition: opacity 1.5s ease-in-out;
+            z-index: 2;
+            box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .horse-animation {
+            position: absolute;
+            transform: translateX(-50%);
+            z-index: 10;
+            image-rendering: auto;
+            transition: opacity 0.2s ease;
+        }
+
+        .center-image {
+            position: absolute;
+            z-index: 45;
+            pointer-events: none;
+            animation: gentleSwing 3.5s ease-in-out infinite,
+                       imageBrightPulse 2.2s ease-in-out infinite;
+        }
+
+        @keyframes gentleSwing {
+            0%   { transform: translate(-50%, -50%) rotate(0deg); }
+            25%  { transform: translate(-50%, -50%) rotate(6deg); }
+            50%  { transform: translate(-50%, -50%) rotate(0deg); }
+            75%  { transform: translate(-50%, -50%) rotate(-6deg); }
+            100% { transform: translate(-50%, -50%) rotate(0deg); }
+        }
+
+        @keyframes imageBrightPulse {
+            0%   { filter: brightness(1) opacity(0.7); }
+            50%  { filter: brightness(2.8) opacity(1); }
+            100% { filter: brightness(1) opacity(0.7); }
+        }
+
+        .flying-gift {
+            position: absolute;
+            z-index: 60;
+            pointer-events: none;
+        }
+
+        .impact-effect {
+            position: absolute;
+            z-index: 65;
+            pointer-events: none;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,200,0,0.6) 30%, rgba(255,100,0,0) 70%);
+            animation: impactBurst 0.4s ease-out forwards;
+        }
+
+        @keyframes impactBurst {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+        }
+
+        .impact-effect-special {
+            position: absolute;
+            z-index: 70;
+            pointer-events: none;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(255, 255, 220, 1) 0%, 
+                rgba(255, 215, 0, 0.9) 20%, 
+                rgba(255, 180, 0, 0.5) 50%, 
+                rgba(255, 140, 0, 0) 100%);
+            box-shadow: 0 0 15px 3px rgba(255, 200, 0, 0.6);
+            animation: impactBurstSpecial 0.35s ease-out forwards;
+        }
+
+        @keyframes impactBurstSpecial {
+            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+            100% { transform: translate(-50%, -50%) scale(1.3); opacity: 0; }
+        }
+
+        .track-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .flag-link {
+            position: absolute;
+            z-index: 12;
+            display: inline-block;
+            text-decoration: none;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .flag-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 5.5px;
+            animation: pureVerticalWave 0.45s infinite linear;
+            outline: 2px solid rgba(255, 255, 255, 0.7);
+            outline-offset: 0px;
+        }
+
+        .flag-link:nth-child(1)  .flag-img { animation-delay: 0s; }
+        .flag-link:nth-child(2)  .flag-img { animation-delay: 0.04s; }
+        .flag-link:nth-child(3)  .flag-img { animation-delay: 0.08s; }
+        .flag-link:nth-child(4)  .flag-img { animation-delay: 0.12s; }
+        .flag-link:nth-child(5)  .flag-img { animation-delay: 0.16s; }
+        .flag-link:nth-child(6)  .flag-img { animation-delay: 0.20s; }
+        .flag-link:nth-child(7)  .flag-img { animation-delay: 0.24s; }
+        .flag-link:nth-child(8)  .flag-img { animation-delay: 0.28s; }
+        .flag-link:nth-child(9)  .flag-img { animation-delay: 0.32s; }
+        .flag-link:nth-child(10) .flag-img { animation-delay: 0.36s; }
+        .flag-link:nth-child(11) .flag-img { animation-delay: 0.10s; }
+        .flag-link:nth-child(12) .flag-img { animation-delay: 0.18s; }
+        .flag-link:nth-child(13) .flag-img { animation-delay: 0.26s; }
+
+        @keyframes pureVerticalWave {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-6deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .country-code {
+            position: fixed;
+            z-index: 13;
+            pointer-events: none;
+            font-family: 'Arial Black', sans-serif;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.12);
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.15);
+            letter-spacing: 3px;
+            font-size: 20px;
+        }
+
+        .win-notification {
+            position: fixed;
+            right: -300px;
+            top: 100px;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.85);
+            color: #ffd700;
+            padding: 8px 15px;
+            border-radius: 15px 0 0 15px;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            border-right: 3px solid #ffd700;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        .win-notification.show {
+            right: 0;
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .win-notification.hide {
+            right: -300px;
+            transition: right 0.35s ease-in;
+        }
+
+        .win-notification .plus-one {
+            font-size: 22px;
+            color: #4CAF50;
+            font-weight: bold;
+            animation: pulseText 0.6s ease-in-out;
+        }
+
+        @keyframes pulseText {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+
+        .win-notification .mini-flag {
+            width: 25px;
+            height: 17px;
+            object-fit: cover;
+            border-radius: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ========== شاشة الاتصال ========== -->
+    <div id="connect-screen" style="
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.95);
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+    ">
+        <div style="text-align: center; color: white; max-width: 400px; padding: 30px;">
+            <h1 style="font-size: 32px; margin-bottom: 10px;">🐴 سباق الخيول</h1>
+            <p style="color: #aaa; margin-bottom: 30px;">TikTok Live Interactive</p>
+            
+            <div id="status-box" style="
+                background: rgba(255,255,255,0.1);
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 20px;
+            ">
+                <div id="status-text" style="font-size: 18px; margin-bottom: 10px;">🔴 غير متصل</div>
+                <div id="status-detail" style="font-size: 13px; color: #aaa;">أدخل اسم حساب TikTok للبدء</div>
+            </div>
+
+            <input type="text" id="username-input" placeholder="اسم حساب TikTok (بدون @)" style="
+                width: 100%;
+                padding: 15px;
+                border: 2px solid #ff0050;
+                border-radius: 10px;
+                background: rgba(255,255,255,0.1);
+                color: white;
+                font-size: 16px;
+                text-align: center;
+                margin-bottom: 15px;
+                outline: none;
+                box-sizing: border-box;
+            ">
+
+            <button id="connect-btn" onclick="connectToTikTok()" style="
+                width: 100%;
+                padding: 15px;
+                background: linear-gradient(45deg, #ff0050, #ff6b9d);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                margin-bottom: 10px;
+            ">🔗 اتصال بالبث</button>
+
+            <button id="fullscreen-btn" onclick="startGame()" style="
+                width: 100%;
+                padding: 15px;
+                background: linear-gradient(45deg, #00b4db, #0083b0);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                display: none;
+            ">🖥️ ملء الشاشة وبدء اللعبة</button>
+
+            <button id="disconnect-btn" onclick="disconnectFromTikTok()" style="
+                width: 100%;
+                padding: 12px;
+                background: transparent;
+                color: #ff4444;
+                border: 1px solid #ff4444;
+                border-radius: 10px;
+                font-size: 14px;
+                cursor: pointer;
+                display: none;
+                margin-top: 10px;
+            ">❌ قطع الاتصال</button>
+        </div>
+    </div>
+
+    <!-- ========== إشعار الهدية ========== -->
+    <div id="gift-toast" style="
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        background: linear-gradient(135deg, #ff0050, #ff6b9d);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 15px;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        font-size: 16px;
+        box-shadow: 0 10px 30px rgba(255,0,80,0.4);
+        display: none;
+        pointer-events: none;
+    "><span id="gift-toast-text"></span></div>
+
+    <!-- ========== الميداليات ========== -->
+    <div class="medals-wrapper" id="medalsWrapper">
+        <div class="medals-container" id="medalsContainer">
+            <div class="card gold" id="gold-card">
+                <span class="medal">🥇</span>
+                <img id="gold-flag" src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg" class="flag-icon" alt="Flag">
+                <span id="gold-count">0</span>
+                <span class="crown">👑</span>
+            </div>
+            <div class="card silver" id="silver-card">
+                <span class="medal">🥈</span>
+                <img id="silver-flag" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_Thailand.svg" class="flag-icon" alt="Flag">
+                <span id="silver-count">0</span>
+                <span class="crown">👑</span>
+            </div>
+            <div class="card bronze" id="bronze-card">
+                <span class="medal">🥉</span>
+                <img id="bronze-flag" src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Flag_of_Saudi_Arabia.svg" class="flag-icon" alt="Flag">
+                <span id="bronze-count">0</span>
+                <span class="crown">👑</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== إشعار الفوز ========== -->
+    <div class="win-notification" id="winNotification">
+        <img class="mini-flag" id="winNotifFlag" src="" alt="">
+        <span id="winNotifText"></span>
+        <span class="plus-one">+1</span>
+    </div>
+
+    <!-- ========== اللعبة ========== -->
+    <div class="container" id="game-container">
+        <canvas class="track-layer" id="trackCanvas"></canvas>
+    </div>
+
+    <script>
+        // ╔══════════════════════════════════════════════════════════╗
+        // ║  🎮 إعدادات اللعبة                                     ║
+        // ╚══════════════════════════════════════════════════════════╝
+        
+        const MEDALS_SCALE = 0.5;
+        const MEDALS_POS_X = 35;
+        const MEDALS_POS_Y = 40;
+        
+        const medalsWrapper = document.getElementById('medalsWrapper');
+        const medalsContainer = document.getElementById('medalsContainer');
+        
+        medalsWrapper.style.left = MEDALS_POS_X + 'px';
+        medalsWrapper.style.top = MEDALS_POS_Y + 'px';
+        medalsContainer.style.transform = 'scale(' + MEDALS_SCALE + ')';
+        medalsContainer.style.transformOrigin = 'top left';
+
+        const START_X = 17;
+        const END_X = 95;
+        const STEP = 8;
+        const SPACE = 6;
+        const TOP_START = 22;
+        const HORSE_W = 12;
+        
+        let lineWidth = 1.5;
+        let lineOpacity = 0.4;
+        let lineColor = '#ffffff';
+        let linePadding = 4;
+        
+        const MAX_GIFTS = 10;
+        const GIFT_SIZE = 80;
+        const GIFT_SPEED = 600;
+        const GAP_BETWEEN = 400;
+        
+        const FLAG_W = 60;
+        const FLAG_H = 29;
+        const FLAG_SCALE = 0.3;
+        const GIFT_X = 4;
+        const FLAG_BORDER = 2;
+        let FLAG_BASE_X = 11.5;
+        let FLAG_OFFSET_X = -10;
+        let FLAG_OFFSET_Y = 8.5;
+        let BURST_SIZE  = 42;
+        let BURST_OFF_X = 20;
+        let BURST_OFF_Y = -7;
+        let GIFTS_Y = 23;
+
+        const countryNames = [
+            "United States", "Philippines", "Mexico", "Palestine", "Israel",
+            "France", "Saudi Arabia", "Brazil", "United Arab Emirates", "Egypt",
+            "Vietnam", "Indonesia", "Iraq"
+        ];
+
+        const countryCodes = [
+            "USA", "PHL", "MEX", "PSE", "ISR", "FRA", "SAU", "BRA", "ARE", "EGY",
+            "VNM", "IDN", "IRQ"
+        ];
+
+        const giftNames = [
+            "Rose", "TikTok", "Love You So Much", "Got It Right", "You're Awesome",
+            "Ice Cream", "Lightning Bolt", "Hot Chili Pepper", "It's an Atom",
+            "Smoke Heart", "Light Banter", "New Songs", "Old School Vibes"
+        ];
+
+        const giftImages = [
+            'https://i.ibb.co/TBPfr5jg/Picsart-26-06-05-18-53-51-616.png',
+            'https://i.ibb.co/Cf1j6xw/Picsart-26-06-05-18-55-21-325.png',
+            'https://i.ibb.co/NdMPYNVb/Picsart-26-06-05-18-56-13-897.png',
+            'https://i.ibb.co/LDySMmSm/Picsart-26-06-05-18-56-53-706.png',
+            'https://i.ibb.co/CsP8whtq/Picsart-26-06-05-18-57-23-363.png',
+            'https://i.ibb.co/BH2W55W8/Picsart-26-06-05-18-58-00-265.png',
+            'https://i.ibb.co/mVjWq05x/Picsart-26-06-05-18-59-08-737.png',
+            'https://i.ibb.co/SwtTNF90/Picsart-26-06-05-18-59-47-069.png',
+            'https://i.ibb.co/35DnyL6S/Picsart-26-06-05-19-01-11-366.png',
+            'https://i.ibb.co/VcH66rc5/Picsart-26-06-05-19-01-54-085.png',
+            'https://i.ibb.co/spVk213N/Picsart-26-06-05-19-02-43-597.png',
+            'https://i.ibb.co/JW09jptY/Picsart-26-06-05-19-03-24-588.png',
+            'https://i.ibb.co/tpv49Mm7/Picsart-26-06-05-19-04-04-640.png'
+        ];
+
+        const horseImages = [
+            'https://i.ibb.co/SCHGBvx/6.png',
+            'https://i.ibb.co/WNJnpYBD/7.png',
+            'https://i.ibb.co/BMk6ncW/7.png',
+            'https://i.ibb.co/mVMVj2v1/6.png',
+            'https://i.ibb.co/HTn0sBR3/7.png',
+            'https://i.ibb.co/JWbtX0D4/7.png',
+            'https://i.ibb.co/XPgyV7Z/6.png'
+        ];
+
+        const flagImages = [
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_the_United_States.svg/1280px-Flag_of_the_United_States.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Flag_of_the_Philippines.svg/960px-Flag_of_the_Philippines.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Flag_of_Mexico.svg/1280px-Flag_of_Mexico.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Flag_of_Palestine.svg/960px-Flag_of_Palestine.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Israel.svg/1280px-Flag_of_Israel.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/960px-France.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Flag_of_Saudi_Arabia.svg/1280px-Flag_of_Saudi_Arabia.svg.png",
+            "https://upload.wikimedia.org/wikipedia/en/thumb/0/05/Flag_of_Brazil.svg/500px-Flag_of_Brazil.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_United_Arab_Emirates.svg/960px-Flag_of_the_United_Arab_Emirates.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Flag_of_Egypt.svg/960px-Flag_of_Egypt.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Flag_of_Vietnam.svg/960px-Flag_of_Vietnam.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Flag_of_Indonesia.svg/960px-Flag_of_Indonesia.svg.png",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Flag_of_Iraq.svg/330px-Flag_of_Iraq.svg.png"
+        ];
+
+        const TOTAL = 13;
+        const mainContainer = document.getElementById('game-container');
+        const canvas = document.getElementById('trackCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const horses = [];
+        const flags = [];
+        const positions = [];
+        const counters = [];
+        const giftElements = [];
+        const countryCodeElements = [];
+        const wins = new Array(TOTAL).fill(0);
+        let horseFrame = 0;
+        let loaded = false;
+
+        // ==================== إشعار الفوز ====================
+        const winNotification = document.getElementById('winNotification');
+        const winNotifFlag = document.getElementById('winNotifFlag');
+        const winNotifText = document.getElementById('winNotifText');
+        let winNotifTimeout = null;
+        let isNotificationVisible = false;
+
+        function showWinNotification(horseIndex) {
+            if (isNotificationVisible) {
+                if (winNotifTimeout) clearTimeout(winNotifTimeout);
+                winNotification.classList.remove('show');
+                winNotification.classList.add('hide');
+                isNotificationVisible = false;
+                setTimeout(() => showNewNotification(horseIndex), 350);
+            } else {
+                showNewNotification(horseIndex);
+            }
+        }
+
+        function showNewNotification(horseIndex) {
+            winNotifFlag.src = flagImages[horseIndex];
+            winNotifText.textContent = countryNames[horseIndex] + ' - ' + giftNames[horseIndex];
+            winNotification.classList.remove('hide');
+            void winNotification.offsetWidth;
+            winNotification.classList.add('show');
+            isNotificationVisible = true;
+            winNotifTimeout = setTimeout(() => {
+                winNotification.classList.remove('show');
+                winNotification.classList.add('hide');
+                isNotificationVisible = false;
+                winNotifTimeout = null;
+            }, 4000);
+        }
+
+        // ==================== مخزون التأثيرات ====================
+        const impactPool = [];
+        const POOL_SIZE = 26;
+
+        function createImpactPool() {
+            for (let i = 0; i < POOL_SIZE; i++) {
+                const effect = document.createElement('div');
+                effect.className = 'impact-effect';
+                effect.style.display = 'none';
+                effect.style.left = '0%';
+                effect.style.top = '0%';
+                mainContainer.appendChild(effect);
+                impactPool.push({ el: effect, busy: false, type: 'normal' });
+
+                const specialEffect = document.createElement('div');
+                specialEffect.className = 'impact-effect-special';
+                specialEffect.style.display = 'none';
+                specialEffect.style.left = '0%';
+                specialEffect.style.top = '0%';
+                mainContainer.appendChild(specialEffect);
+                impactPool.push({ el: specialEffect, busy: false, type: 'special' });
+            }
+        }
+
+        function showImpact(horseIndex, isSpecial = false) {
+            const horse = horses[horseIndex];
+            const horseRect = horse.getBoundingClientRect();
+            const containerRect = mainContainer.getBoundingClientRect();
+            const baseX = ((horseRect.left + horseRect.width/2) - containerRect.left);
+            const baseY = ((horseRect.top + horseRect.height/2) - containerRect.top);
+            const cx = (baseX + BURST_OFF_X) / containerRect.width * 100;
+            const cy = (baseY + BURST_OFF_Y) / containerRect.height * 100;
+            const targetType = isSpecial ? 'special' : 'normal';
+            
+            for (let i = 0; i < impactPool.length; i++) {
+                const item = impactPool[i];
+                if (!item.busy && item.type === targetType) {
+                    item.busy = true;
+                    item.el.style.display = 'block';
+                    item.el.style.left = cx + '%';
+                    item.el.style.top = cy + '%';
+                    const size = isSpecial ? BURST_SIZE * 0.8 : BURST_SIZE;
+                    item.el.style.width = size + 'px';
+                    item.el.style.height = size + 'px';
+                    item.el.style.animation = 'none';
+                    item.el.offsetHeight;
+                    const animClass = isSpecial ? 'impactBurstSpecial' : 'impactBurst';
+                    const duration = isSpecial ? 350 : 400;
+                    item.el.style.animation = `${animClass} ${duration / 1000}s ease-out forwards`;
+                    setTimeout(() => {
+                        item.el.style.display = 'none';
+                        item.busy = false;
+                    }, duration);
+                    return duration;
+                }
+            }
+            return 400;
+        }
+
+        function updateAllFlags() {
+            flags.forEach((flag, i) => {
+                flag.style.transition = horses[i].style.transition;
+                const flagLeft = positions[i] + (FLAG_BASE_X - START_X);
+                const flagLeftPx = (flagLeft / 100) * window.innerWidth + FLAG_OFFSET_X;
+                const flagLeftPercent = (flagLeftPx / window.innerWidth) * 100;
+                flag.style.left = flagLeftPercent + '%';
+                flag.style.top = (23 + i * 6 + FLAG_OFFSET_Y / window.innerHeight * 100) + '%';
+            });
+        }
+
+        function updateAllCountryCodes() {
+            countryCodeElements.forEach((codeEl, i) => {
+                const leftPercent = 80 + (i * -5);
+                const topPercent = 22 + (i * 6);
+                codeEl.style.left = leftPercent + '%';
+                codeEl.style.top = topPercent + '%';
+            });
+        }
+
+        function updateLeaderboard() {
+            const stats = wins.map((count, index) => ({ index, count }));
+            stats.sort((a, b) => b.count - a.count);
+            const goldFlag = document.getElementById('gold-flag');
+            const goldCount = document.getElementById('gold-count');
+            const silverFlag = document.getElementById('silver-flag');
+            const silverCount = document.getElementById('silver-count');
+            const bronzeFlag = document.getElementById('bronze-flag');
+            const bronzeCount = document.getElementById('bronze-count');
+            if (stats[0]) { goldFlag.src = flagImages[stats[0].index]; goldCount.textContent = stats[0].count; }
+            if (stats[1]) { silverFlag.src = flagImages[stats[1].index]; silverCount.textContent = stats[1].count; }
+            if (stats[2]) { bronzeFlag.src = flagImages[stats[2].index]; bronzeCount.textContent = stats[2].count; }
+        }
+
+        // ==================== تحميل مسبق ====================
+        const preloaded = { horses: [], gifts: [], flags: [] };
+        let toLoad = horseImages.length + giftImages.length + flagImages.length;
+        let loadedCount = 0;
+
+        function oneLoaded() {
+            loadedCount++;
+            if (loadedCount >= toLoad) {
+                loaded = true;
+                createImpactPool();
+                init();
+                updateLeaderboard();
+            }
+        }
+
+        horseImages.forEach(u => { const i = new Image(); i.onload = i.onerror = oneLoaded; i.src = u; preloaded.horses.push(i); });
+        giftImages.forEach(u => { const i = new Image(); i.onload = i.onerror = oneLoaded; i.src = u; preloaded.gifts.push(i); });
+        flagImages.forEach(u => { const i = new Image(); i.onload = i.onerror = oneLoaded; i.src = u; preloaded.flags.push(i); });
+
+        // ==================== نجوم ====================
+        function createStars() {
+            for (let i = 0; i < 35; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                mainContainer.appendChild(star);
+                animateStar(star);
+            }
+        }
+
+        function animateStar(star) {
+            const vd = Math.random() * 4000 + 4000;
+            const hd = Math.random() * 1500 + 1500;
+            setTimeout(() => {
+                star.style.opacity = (Math.random() * 0.4 + 0.3).toString();
+                setTimeout(() => {
+                    star.style.opacity = '0';
+                    setTimeout(() => {
+                        star.style.top = Math.random() * 100 + '%';
+                        star.style.left = Math.random() * 100 + '%';
+                        animateStar(star);
+                    }, hd);
+                }, vd);
+            }, Math.random() * 2000);
+        }
+
+        createStars();
+
+        // ==================== كانفاس ====================
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', () => { resizeCanvas(); updateAllCountryCodes(); });
+        resizeCanvas();
+
+        function drawLines() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = lineWidth;
+            ctx.globalAlpha = lineOpacity;
+            for (let i = 0; i < horses.length; i++) {
+                const rect = horses[i].getBoundingClientRect();
+                const y = rect.top + rect.height + linePadding;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1.0;
+            requestAnimationFrame(drawLines);
+        }
+
+        function startDrawing() {
+            if (horses.length > 0) requestAnimationFrame(drawLines);
+            else setTimeout(startDrawing, 50);
+        }
+
+        // ==================== إنشاء ====================
+        function init() {
+            for (let i = 0; i < TOTAL; i++) {
+                const el = document.createElement('img');
+                el.src = preloaded.gifts[i].src;
+                el.className = 'center-image';
+                el.style.width = '100px';
+                el.style.height = '100px';
+                el.style.left = GIFT_X + '%';
+                el.style.top = (GIFTS_Y + i * 6) + '%';
+                el.style.transform = 'translate(-50%,-50%)';
+                el.style.zIndex = 45 + i;
+                el.style.animationDelay = (i * 0.25) + 's, ' + (i * 0.18) + 's';
+                mainContainer.appendChild(el);
+                giftElements.push(el);
+            }
+
+            for (let i = 0; i < TOTAL; i++) {
+                const el = document.createElement('img');
+                el.src = preloaded.horses[0].src;
+                el.className = 'horse-animation';
+                el.style.width = HORSE_W + '%';
+                el.style.left = START_X + '%';
+                el.style.top = (TOP_START + i * SPACE) + '%';
+                mainContainer.appendChild(el);
+                horses.push(el);
+                positions.push(START_X);
+                counters.push(0);
+            }
+
+            for (let i = 0; i < TOTAL; i++) {
+                const codeEl = document.createElement('div');
+                codeEl.className = 'country-code';
+                codeEl.textContent = countryCodes[i];
+                codeEl.style.fontSize = '18px';
+                codeEl.style.color = 'rgba(255, 255, 255, 0.10)';
+                codeEl.style.textShadow = '0 0 5px rgba(255, 255, 255, 0.15)';
+                const leftPercent = 80 + (i * -5);
+                const topPercent = 22 + (i * 6);
+                codeEl.style.left = leftPercent + '%';
+                codeEl.style.top = topPercent + '%';
+                document.body.appendChild(codeEl);
+                countryCodeElements.push(codeEl);
+            }
+
+            for (let i = 0; i < TOTAL; i++) {
+                const link = document.createElement('a');
+                link.href = flagImages[i];
+                link.target = '_blank';
+                link.className = 'flag-link';
+                link.style.width = FLAG_W + 'px';
+                link.style.height = FLAG_H + 'px';
+                const initFlagLeft = START_X + (FLAG_BASE_X - START_X);
+                const initFlagLeftPx = (initFlagLeft / 100) * window.innerWidth + FLAG_OFFSET_X;
+                const initFlagLeftPercent = (initFlagLeftPx / window.innerWidth) * 100;
+                link.style.left = initFlagLeftPercent + '%';
+                link.style.top = (23 + i * 6 + FLAG_OFFSET_Y / window.innerHeight * 100) + '%';
+                link.style.transform = `translate(-50%,-50%) scale(${FLAG_SCALE})`;
+                link.style.zIndex = 12 + i;
+                const img = document.createElement('img');
+                img.src = preloaded.flags[i].src;
+                img.className = 'flag-img';
+                img.style.outline = FLAG_BORDER + 'px solid rgba(255,255,255,0.7)';
+                link.appendChild(img);
+                mainContainer.appendChild(link);
+                flags.push(link);
+            }
+
+            setInterval(() => {
+                horseFrame = (horseFrame + 1) % preloaded.horses.length;
+                horses.forEach(h => h.src = preloaded.horses[horseFrame].src);
+            }, 62);
+
+            startDrawing();
+        }
+
+        // ==================== هدايا ====================
+        function sendGifts(horseIndex, count) {
+            for (let g = 0; g < count; g++) {
+                setTimeout(() => flyGift(horseIndex), g * GAP_BETWEEN);
+            }
+        }
+
+        function flyGift(horseIndex) {
+            const horse = horses[horseIndex];
+            const topY = (GIFTS_Y + horseIndex * 6);
+            const gift = document.createElement('img');
+            gift.src = preloaded.gifts[horseIndex].src;
+            gift.className = 'flying-gift';
+            gift.style.width = GIFT_SIZE + 'px';
+            gift.style.height = GIFT_SIZE + 'px';
+            gift.style.left = GIFT_X + '%';
+            gift.style.top = topY + '%';
+            gift.style.transform = 'translate(-50%,-50%) scale(0.4)';
+            mainContainer.appendChild(gift);
+            requestAnimationFrame(() => { gift.style.transform = 'translate(-50%,-50%) scale(1.2)'; });
+            const startTime = performance.now();
+            const startLeft = GIFT_X;
+
+            function animate(now) {
+                const targetLeft = positions[horseIndex];
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / GIFT_SPEED, 1);
+                const currentLeft = startLeft + (targetLeft - startLeft) * progress;
+                gift.style.left = currentLeft + '%';
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    gift.remove();
+                    counters[horseIndex]++;
+                    const isLast = (counters[horseIndex] >= MAX_GIFTS);
+                    const impactDuration = showImpact(horseIndex, isLast);
+                    if (isLast) {
+                        wins[horseIndex]++;
+                        updateLeaderboard();
+                        showWinNotification(horseIndex);
+                        horse.style.opacity = '0';
+                        positions[horseIndex] = START_X;
+                        counters[horseIndex] = 0;
+                        horse.style.transition = 'none';
+                        setTimeout(() => {
+                            horse.style.left = positions[horseIndex] + '%';
+                            updateAllFlags();
+                            horse.style.opacity = '1';
+                            horse.style.transition = 'left 0.3s ease-out, opacity 0.2s ease';
+                        }, impactDuration);
+                    } else {
+                        positions[horseIndex] = Math.min(positions[horseIndex] + STEP, END_X);
+                        horse.style.transition = 'left 0.3s ease-out';
+                        horse.style.left = positions[horseIndex] + '%';
+                        updateAllFlags();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // ╔══════════════════════════════════════════════════════════╗
+        // ║  🔌 نظام الاتصال بـ TikTok                             ║
+        // ╚══════════════════════════════════════════════════════════╝
+
+        const WS_URL = `ws://${window.location.host}`;
+        let ws = null;
+        let isGameStarted = false;
+
+        const connectScreen = document.getElementById('connect-screen');
+        const connectBtn = document.getElementById('connect-btn');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const usernameInput = document.getElementById('username-input');
+        const statusText = document.getElementById('status-text');
+        const statusDetail = document.getElementById('status-detail');
+        const statusBox = document.getElementById('status-box');
+        const giftToast = document.getElementById('gift-toast');
+        const giftToastText = document.getElementById('gift-toast-text');
+
+        function connectToTikTok() {
+            const username = usernameInput.value.trim();
+            if (!username) {
+                statusText.textContent = '⚠️ خطأ';
+                statusDetail.textContent = 'الرجاء إدخال اسم الحساب';
+                return;
+            }
+            ws = new WebSocket(WS_URL);
+            ws.onopen = () => {
+                ws.send(JSON.stringify({ action: 'connect', username: username }));
+                statusText.textContent = '⏳ جاري الاتصال...';
+                statusDetail.textContent = `محاولة الاتصال بـ @${username}`;
+                connectBtn.textContent = '⏳ جاري الاتصال...';
+                connectBtn.disabled = true;
+            };
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'connected') {
+                    statusText.textContent = '✅ متصل بالبث!';
+                    statusDetail.textContent = `@${data.username}`;
+                    statusBox.style.border = '2px solid #00ff00';
+                    fullscreenBtn.style.display = 'block';
+                    disconnectBtn.style.display = 'block';
+                    connectBtn.style.display = 'none';
+                    usernameInput.style.display = 'none';
+                }
+                if (data.type === 'disconnected') {
+                    statusText.textContent = '🔴 انقطع الاتصال';
+                    statusDetail.textContent = 'جاري إعادة المحاولة...';
+                    fullscreenBtn.style.display = 'none';
+                }
+                if (data.type === 'error') {
+                    statusText.textContent = '❌ خطأ';
+                    statusDetail.textContent = data.message;
+                    connectBtn.textContent = '🔗 اتصال بالبث';
+                    connectBtn.disabled = false;
+                }
+                if (data.type === 'gift' && isGameStarted) {
+                    giftToastText.textContent = `🎁 ${data.giftName} → ${countryNames[data.horseIndex]} ×${data.count}`;
+                    giftToast.style.display = 'block';
+                    setTimeout(() => { giftToast.style.display = 'none'; }, 2000);
+                    sendGifts(data.horseIndex, data.count);
+                }
+            };
+            ws.onerror = () => {
+                statusText.textContent = '❌ خطأ في الاتصال';
+                connectBtn.textContent = '🔗 اتصال بالبث';
+                connectBtn.disabled = false;
+            };
+            ws.onclose = () => {
+                if (isGameStarted) {
+                    statusText.textContent = '🔴 انقطع الاتصال';
+                }
+            };
+        }
+
+        function disconnectFromTikTok() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ action: 'disconnect' }));
+            }
+            connectBtn.style.display = 'block';
+            connectBtn.textContent = '🔗 اتصال بالبث';
+            connectBtn.disabled = false;
+            fullscreenBtn.style.display = 'none';
+            disconnectBtn.style.display = 'none';
+            usernameInput.style.display = 'block';
+            statusText.textContent = '🔴 غير متصل';
+            statusDetail.textContent = 'أدخل اسم حساب TikTok للبدء';
+            statusBox.style.border = 'none';
+            isGameStarted = false;
+        }
+
+        function startGame() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(() => {
+                    connectScreen.style.display = 'none';
+                    isGameStarted = true;
+                }).catch(() => {
+                    connectScreen.style.display = 'none';
+                    isGameStarted = true;
+                });
+            } else {
+                connectScreen.style.display = 'none';
+                isGameStarted = true;
+            }
+        }
+    </script>
+</body>
+  </html>
