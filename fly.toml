@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for tiktok-horse-game on 2026-06-12T14:52:13Z
+# fly.toml app configuration file generated for tiktok-horse-game-ziezxa on 2026-06-12T15:10:06Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'tiktok-horse-game'
-primary_region = 'fra'
+app = 'tiktok-horse-game-ziezxa'
+primary_region = 'ams'
 
 [build]
 
