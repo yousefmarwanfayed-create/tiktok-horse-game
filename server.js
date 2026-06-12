@@ -1,4 +1,3 @@
-
 const express = require('express');
 const WebSocket = require('ws');
 const http = require('http');
@@ -52,7 +51,13 @@ wss.on('connection', (ws) => {
                     }
 
                     console.log('🔄 جاري الاتصال بـ @' + data.username);
-                    tiktokConnection = new WebcastPushConnection(data.username);
+                    
+                    tiktokConnection = new WebcastPushConnection(data.username, {
+                        enableWebsocketUpgrade: true,
+                        requestOptions: {
+                            timeout: 20000
+                        }
+                    });
 
                     tiktokConnection.on('connected', (state) => {
                         console.log('✅ متصل بالبث: @' + data.username);
