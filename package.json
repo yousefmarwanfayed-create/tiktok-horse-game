@@ -8,6 +8,6 @@
   "dependencies": {
     "express": "^4.21.0",
     "ws": "^8.18.0",
-    "tiktok-live-connector": "github:zerodytrash/TikTok-Live-Connector"
+    "tiktok-live-connector": "https://github.com/zerodytrash/TikTok-Live-Connector.git"
   }
 }
