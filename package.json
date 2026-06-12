@@ -1,14 +1,13 @@
 {
   "name": "tiktok-horse-game",
   "version": "1.0.0",
-  "description": "لعبة سباق الخيول التفاعلية لبث TikTok",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "ws": "^8.14.2",
-    "tiktok-live-connector": "^1.0.0"
+    "express": "^4.21.0",
+    "ws": "^8.18.0",
+    "tiktok-live-connector": "github:zerodytrash/TikTok-Live-Connector"
   }
 }
