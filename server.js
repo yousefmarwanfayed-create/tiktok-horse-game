@@ -1,7 +1,8 @@
 const express = require('express');
 const WebSocket = require('ws');
 const http = require('http');
-const { WebcastPushConnection } = require('tiktok-live-connector');
+const TikTokLiveConnector = require('tiktok-live-connector');
+const WebcastPushConnection = TikTokLiveConnector.WebcastPushConnection;
 const path = require('path');
 
 const app = express();
