@@ -1,25 +1,15 @@
-const express = require('express');
-const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-const path = require('path');
 const { WebcastPushConnection } = require('tiktok-live-connector');
-
 const TIKTOK_USER = 'janteeshaaban'; 
 
-app.use(express.static(path.join(__dirname, 'public')));
-
+// الاتصال المباشر بأبسط صورة ممكنة
 const tiktokLiveConnection = new WebcastPushConnection(TIKTOK_USER);
 
 tiktokLiveConnection.connect().then(state => {
-    console.log(`✅ متصل بـ: ${state.roomId}`);
+    console.log("✅ متصل بنجاح: " + state.roomId);
 }).catch(err => {
-    console.error("❌ فشل الاتصال:", err.message);
+    console.log("❌ فشل الاتصال، تأكد أن الحساب في حالة بث مباشر حالياً.");
 });
 
 tiktokLiveConnection.on('gift', (data) => {
-    console.log(`🎁 هدية من ${data.uniqueId}: ${data.giftName}`);
-    io.emit('giftEvent', data);
+    console.log("🎁 وصلت هدية:", data.giftName);
 });
-
-http.listen(3000, () => console.log('🚀 السيرفر يعمل على http://localhost:3000'));
