@@ -4,7 +4,7 @@ const { WebcastPushConnection } = require('tiktok-live-connector');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
-const TIKTOK_USER = 'yo_u__ef'; // ← غير هذا للحساب
+const TIKTOK_USER = 'janteeshaaban'; // ← غير هذا للحساب
 
 app.use(express.static(path.join(__dirname, 'public')));
 
