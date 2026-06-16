@@ -3,74 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 TikTok Live Dashboard - تيك توك لايف</title>
+    <title>🎮 TikTok Live Dashboard</title>
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes shine {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-30px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0) scale(1);
-            }
-        }
-
-        @keyframes giftPop {
-            0% {
-                opacity: 0;
-                transform: scale(0.3) rotate(-10deg);
-            }
-            50% {
-                transform: scale(1.2) rotate(5deg);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(0);
-            }
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             background: #0a0a12;
             color: #fff;
             min-height: 100vh;
             background: linear-gradient(135deg, #0a0a12 0%, #1a0a2e 50%, #0a0a12 100%);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
         }
-
-        /* Header بتصميم تيك توك */
         .header {
             background: rgba(10, 10, 18, 0.92);
             backdrop-filter: blur(20px);
@@ -82,15 +26,9 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 30px rgba(254, 44, 85, 0.1);
+            flex-wrap: wrap;
+            gap: 10px;
         }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
         .logo {
             display: flex;
             align-items: center;
@@ -102,15 +40,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
-        .logo i {
-            font-size: 32px;
-            background: linear-gradient(135deg, #fe2c55, #25f4ee);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
+        .logo i { font-size: 32px; }
         .live-badge {
             background: #fe2c55;
             color: #fff;
@@ -122,15 +52,8 @@
             align-items: center;
             gap: 6px;
             animation: pulse 2s infinite;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
-
-        .live-badge i {
-            font-size: 10px;
-            animation: pulse 1s infinite;
-        }
-
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         .status-text {
             color: #4ade80;
             font-size: 13px;
@@ -139,50 +62,35 @@
             align-items: center;
             gap: 8px;
         }
-
-        .status-text i {
-            font-size: 10px;
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 1.5s infinite;
         }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
+        .status-dot.offline { background: #ef4444; }
         .stats-mini {
             display: flex;
-            gap: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px 20px;
+            gap: 15px;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 16px;
             border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            flex-wrap: wrap;
         }
-
         .stats-mini .item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             font-size: 13px;
             color: #aaa;
         }
-
-        .stats-mini .item i {
-            font-size: 14px;
-        }
-
-        .stats-mini .item .num {
-            color: #fff;
-            font-weight: 700;
-            font-size: 15px;
-        }
-
+        .stats-mini .item .num { color: #fff; font-weight: 700; font-size: 15px; }
         .stats-mini .item .num.gold { color: #ffd700; }
         .stats-mini .item .num.pink { color: #fe2c55; }
         .stats-mini .item .num.green { color: #4ade80; }
         .stats-mini .item .num.blue { color: #60a5fa; }
-
-        /* Main Container */
         .container {
             display: grid;
             grid-template-columns: 1fr 380px;
@@ -191,37 +99,15 @@
             max-width: 1600px;
             margin: 0 auto;
         }
-
-        /* Left Panel */
-        .left-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Cards */
         .card {
             background: rgba(26, 26, 46, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
         }
-
-        .card:hover {
-            border-color: rgba(254, 44, 85, 0.15);
-            box-shadow: 0 8px 40px rgba(254, 44, 85, 0.05);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
         .card-title {
             font-size: 15px;
             font-weight: 600;
@@ -229,12 +115,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 16px;
         }
-
-        .card-title i {
-            font-size: 18px;
-        }
-
         .card-title .badge {
             background: #fe2c55;
             color: #fff;
@@ -246,28 +128,20 @@
             display: flex;
             align-items: center;
         }
-
-        /* Comments */
-        .comments-container {
-            max-height: 380px;
+        .card-title .badge.gold { background: #ffd700; color: #000; }
+        .comments-container, .gifts-container, .activity-container {
+            max-height: 350px;
             overflow-y: auto;
             padding-right: 4px;
         }
-
-        .comments-container::-webkit-scrollbar {
+        .comments-container::-webkit-scrollbar,
+        .gifts-container::-webkit-scrollbar,
+        .activity-container::-webkit-scrollbar {
             width: 4px;
         }
-
-        .comments-container::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-        }
-
-        .comments-container::-webkit-scrollbar-thumb {
-            background: #fe2c55;
-            border-radius: 10px;
-        }
-
+        .comments-container::-webkit-scrollbar-thumb { background: #fe2c55; border-radius: 10px; }
+        .gifts-container::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 10px; }
+        .activity-container::-webkit-scrollbar-thumb { background: #60a5fa; border-radius: 10px; }
         .comment-item {
             display: flex;
             align-items: flex-start;
@@ -276,14 +150,8 @@
             border-radius: 14px;
             margin-bottom: 6px;
             animation: slideIn 0.4s ease;
-            transition: all 0.2s ease;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255,255,255,0.02);
         }
-
-        .comment-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
         .comment-item .avatar {
             width: 40px;
             height: 40px;
@@ -293,68 +161,29 @@
             flex-shrink: 0;
             background: #2a2a4a;
         }
-
-        .comment-item .info {
-            flex: 1;
-            min-width: 0;
-        }
-
+        .comment-item .info { flex: 1; }
         .comment-item .name {
             font-size: 13px;
             font-weight: 600;
             color: #fe2c55;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
-
-        .comment-item .name .time {
-            font-weight: 400;
-            color: #666;
-            font-size: 10px;
-        }
-
         .comment-item .text {
             font-size: 14px;
             color: #e0e0e0;
             margin-top: 2px;
             word-wrap: break-word;
-            line-height: 1.4;
         }
-
-        /* Gifts */
-        .gifts-container {
-            max-height: 200px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        .gifts-container::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .gifts-container::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-        }
-
-        .gifts-container::-webkit-scrollbar-thumb {
-            background: #ffd700;
-            border-radius: 10px;
-        }
-
         .gift-item {
             display: flex;
             align-items: center;
             gap: 14px;
             padding: 10px 14px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(255, 215, 0, 0.01));
+            background: linear-gradient(135deg, rgba(255,215,0,0.05), rgba(255,215,0,0.01));
             border-radius: 14px;
             margin-bottom: 6px;
-            border: 1px solid rgba(255, 215, 0, 0.08);
-            animation: giftPop 0.5s ease;
+            border: 1px solid rgba(255,215,0,0.08);
+            animation: slideIn 0.4s ease;
         }
-
         .gift-item .avatar {
             width: 40px;
             height: 40px;
@@ -364,71 +193,24 @@
             flex-shrink: 0;
             background: #2a2a4a;
         }
-
-        .gift-item .info {
-            flex: 1;
-        }
-
-        .gift-item .name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #ddd;
-        }
-
+        .gift-item .info { flex: 1; }
+        .gift-item .name { font-size: 13px; font-weight: 600; color: #ddd; }
         .gift-item .gift-details {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             margin-top: 2px;
+            flex-wrap: wrap;
         }
-
-        .gift-item .gift-name {
-            color: #ffd700;
-            font-weight: 700;
-            font-size: 15px;
-        }
-
+        .gift-item .gift-name { color: #ffd700; font-weight: 700; font-size: 15px; }
         .gift-item .gift-count {
-            background: rgba(255, 215, 0, 0.15);
+            background: rgba(255,215,0,0.15);
             color: #ffd700;
             padding: 0 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 700;
         }
-
-        .gift-item .gift-diamonds {
-            color: #888;
-            font-size: 11px;
-        }
-
-        /* Right Panel - Activity */
-        .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .activity-container {
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        .activity-container::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .activity-container::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-        }
-
-        .activity-container::-webkit-scrollbar-thumb {
-            background: #60a5fa;
-            border-radius: 10px;
-        }
-
         .activity-item {
             display: flex;
             align-items: center;
@@ -437,9 +219,8 @@
             border-radius: 12px;
             margin-bottom: 4px;
             animation: slideIn 0.3s ease;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255,255,255,0.02);
         }
-
         .activity-item .icon {
             width: 32px;
             height: 32px;
@@ -450,393 +231,189 @@
             font-size: 14px;
             flex-shrink: 0;
         }
-
-        .activity-item .icon.follow { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
-        .activity-item .icon.share { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
-        .activity-item .icon.gift { background: rgba(255, 215, 0, 0.15); color: #ffd700; }
-        .activity-item .icon.comment { background: rgba(254, 44, 85, 0.15); color: #fe2c55; }
-
-        .activity-item .info {
-            flex: 1;
-            font-size: 13px;
-            color: #ccc;
-        }
-
-        .activity-item .info strong {
-            color: #fff;
-            font-weight: 600;
-        }
-
-        .activity-item .info .highlight {
-            color: #fe2c55;
-        }
-
-        .activity-item .time {
-            font-size: 10px;
-            color: #555;
-        }
-
-        /* Empty State */
+        .activity-item .icon.follow { background: rgba(74,222,128,0.15); color: #4ade80; }
+        .activity-item .icon.share { background: rgba(96,165,250,0.15); color: #60a5fa; }
+        .activity-item .icon.gift { background: rgba(255,215,0,0.15); color: #ffd700; }
+        .activity-item .icon.comment { background: rgba(254,44,85,0.15); color: #fe2c55; }
+        .activity-item .info { flex: 1; font-size: 13px; color: #ccc; }
+        .activity-item .info strong { color: #fff; font-weight: 600; }
+        .activity-item .time { font-size: 10px; color: #555; }
         .empty-state {
             text-align: center;
             padding: 40px 20px;
             color: #444;
         }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.3;
+        .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
-
-        .empty-state p {
-            font-size: 14px;
-        }
-
-        /* Responsive */
         @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-            .right-panel {
-                max-height: 400px;
-            }
-            .header {
-                flex-wrap: wrap;
-                gap: 12px;
-            }
-            .stats-mini {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
+            .container { grid-template-columns: 1fr; }
         }
-
         @media (max-width: 600px) {
-            .header {
-                padding: 12px 16px;
-            }
-            .logo {
-                font-size: 18px;
-            }
-            .logo i {
-                font-size: 24px;
-            }
-            .container {
-                padding: 12px;
-                gap: 12px;
-            }
-            .card {
-                padding: 14px;
-            }
-            .stats-mini .item {
-                font-size: 11px;
-            }
-            .stats-mini .item .num {
-                font-size: 13px;
-            }
-            .live-badge {
-                font-size: 10px;
-                padding: 2px 12px;
-            }
-        }
-
-        /* GLOW EFFECTS */
-        .glow-pink {
-            box-shadow: 0 0 30px rgba(254, 44, 85, 0.05);
-        }
-        .glow-gold {
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.05);
-        }
-
-        /* Status Dot */
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #4ade80;
-            animation: pulse 1.5s infinite;
-        }
-
-        .status-dot.offline {
-            background: #ef4444;
+            .header { padding: 12px 16px; }
+            .container { padding: 12px; }
+            .stats-mini { gap: 10px; padding: 6px 12px; }
+            .stats-mini .item { font-size: 11px; }
         }
     </style>
 </head>
 <body>
-
-    <!-- HEADER -->
     <header class="header">
-        <div class="header-left">
-            <div class="logo">
-                <i class="fab fa-tiktok"></i>
-                <span>Live</span>
-            </div>
-            <div class="live-badge">
-                <i class="fas fa-circle"></i> LIVE
-            </div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div class="logo"><i class="fab fa-tiktok"></i><span>Live</span></div>
+            <div class="live-badge"><i class="fas fa-circle"></i> LIVE</div>
             <div class="status-text">
                 <span class="status-dot" id="statusDot"></span>
                 <span id="statusText">جاري الاتصال...</span>
             </div>
         </div>
-        <div class="header-right">
-            <div class="stats-mini">
-                <div class="item">
-                    <i class="fas fa-comment" style="color:#fe2c55;"></i>
-                    <span class="num pink" id="miniComments">0</span>
-                </div>
-                <div class="item">
-                    <i class="fas fa-gift" style="color:#ffd700;"></i>
-                    <span class="num gold" id="miniGifts">0</span>
-                </div>
-                <div class="item">
-                    <i class="fas fa-user-plus" style="color:#4ade80;"></i>
-                    <span class="num green" id="miniFollows">0</span>
-                </div>
-                <div class="item">
-                    <i class="fas fa-share" style="color:#60a5fa;"></i>
-                    <span class="num blue" id="miniShares">0</span>
-                </div>
-            </div>
+        <div class="stats-mini">
+            <div class="item"><i class="fas fa-comment" style="color:#fe2c55;"></i><span class="num pink" id="miniComments">0</span></div>
+            <div class="item"><i class="fas fa-gift" style="color:#ffd700;"></i><span class="num gold" id="miniGifts">0</span></div>
+            <div class="item"><i class="fas fa-user-plus" style="color:#4ade80;"></i><span class="num green" id="miniFollows">0</span></div>
+            <div class="item"><i class="fas fa-share" style="color:#60a5fa;"></i><span class="num blue" id="miniShares">0</span></div>
         </div>
     </header>
-
-    <!-- MAIN -->
     <div class="container">
-
-        <!-- LEFT PANEL -->
         <div class="left-panel">
-
-            <!-- COMMENTS CARD -->
-            <div class="card glow-pink">
-                <div class="card-header">
-                    <div class="card-title">
-                        <i class="fas fa-comment" style="color:#fe2c55;"></i>
-                        التعليقات
-                        <span class="badge" id="commentBadge">0</span>
-                    </div>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-comment" style="color:#fe2c55;"></i>
+                    التعليقات
+                    <span class="badge" id="commentBadge">0</span>
                 </div>
                 <div class="comments-container" id="commentsContainer">
-                    <div class="empty-state">
-                        <i class="fas fa-comment-slash"></i>
-                        <p>⏳ في انتظار التعليقات...</p>
-                    </div>
+                    <div class="empty-state"><i class="fas fa-comment-slash"></i><p>⏳ في انتظار التعليقات...</p></div>
                 </div>
             </div>
-
-            <!-- GIFTS CARD -->
-            <div class="card glow-gold">
-                <div class="card-header">
-                    <div class="card-title">
-                        <i class="fas fa-gift" style="color:#ffd700;"></i>
-                        الهدايا
-                        <span class="badge" id="giftBadge">0</span>
-                    </div>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-gift" style="color:#ffd700;"></i>
+                    الهدايا
+                    <span class="badge gold" id="giftBadge">0</span>
                 </div>
                 <div class="gifts-container" id="giftsContainer">
-                    <div class="empty-state">
-                        <i class="fas fa-gift"></i>
-                        <p>⏳ في انتظار الهدايا...</p>
-                    </div>
+                    <div class="empty-state"><i class="fas fa-gift"></i><p>⏳ في انتظار الهدايا...</p></div>
                 </div>
             </div>
-
         </div>
-
-        <!-- RIGHT PANEL -->
         <div class="right-panel">
-
-            <!-- ACTIVITY CARD -->
             <div class="card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <i class="fas fa-bolt" style="color:#60a5fa;"></i>
-                        النشاطات
-                    </div>
+                <div class="card-title">
+                    <i class="fas fa-bolt" style="color:#60a5fa;"></i>
+                    النشاطات
                 </div>
                 <div class="activity-container" id="activityContainer">
-                    <div class="empty-state">
-                        <i class="fas fa-clock"></i>
-                        <p>⏳ في انتظار الأحداث...</p>
-                    </div>
+                    <div class="empty-state"><i class="fas fa-clock"></i><p>⏳ في انتظار الأحداث...</p></div>
                 </div>
             </div>
-
         </div>
-
     </div>
-
     <script>
         const socket = io();
+        let stats = { comments: 0, gifts: 0, follows: 0, shares: 0 };
 
-        let stats = {
-            comments: 0,
-            gifts: 0,
-            follows: 0,
-            shares: 0
-        };
-
-        // DOM Elements
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        const commentsContainer = document.getElementById('commentsContainer');
-        const giftsContainer = document.getElementById('giftsContainer');
-        const activityContainer = document.getElementById('activityContainer');
-
-        const miniComments = document.getElementById('miniComments');
-        const miniGifts = document.getElementById('miniGifts');
-        const miniFollows = document.getElementById('miniFollows');
-        const miniShares = document.getElementById('miniShares');
-
-        const commentBadge = document.getElementById('commentBadge');
-        const giftBadge = document.getElementById('giftBadge');
-
-        // Socket Events
-        socket.on('connect', () => {
-            statusDot.className = 'status-dot';
-            statusText.textContent = 'متصل بالخادم';
+        socket.on('connect', function() {
+            document.getElementById('statusDot').className = 'status-dot';
+            document.getElementById('statusText').textContent = 'متصل بالخادم';
+            console.log('✅ Socket.IO Connected');
         });
 
-        socket.on('system', (data) => {
-            statusDot.className = 'status-dot';
-            statusText.textContent = data.msg;
+        socket.on('connect_error', function(error) {
+            document.getElementById('statusDot').className = 'status-dot offline';
+            document.getElementById('statusText').textContent = '⚠️ خطأ في الاتصال';
+            console.log('❌ Socket.IO Error:', error);
         });
 
-        socket.on('comment', (data) => {
+        socket.on('system', function(data) {
+            document.getElementById('statusDot').className = 'status-dot';
+            document.getElementById('statusText').textContent = data.msg;
+        });
+
+        socket.on('comment', function(data) {
             stats.comments++;
             updateStats();
-
-            // Remove empty state
-            if (commentsContainer.querySelector('.empty-state')) {
-                commentsContainer.innerHTML = '';
-            }
-
-            const commentHTML = `
+            const container = document.getElementById('commentsContainer');
+            if (container.querySelector('.empty-state')) container.innerHTML = '';
+            container.insertAdjacentHTML('afterbegin', `
                 <div class="comment-item">
-                    <img class="avatar" src="${data.avatar}" onerror="this.src='https://ui-avatars.com/api/?name=${data.nickname}&background=fe2c55&color=fff&size=40'">
+                    <img class="avatar" src="${data.avatar || 'https://ui-avatars.com/api/?name='+data.nickname+'&background=fe2c55&color=fff&size=40'}" onerror="this.src='https://ui-avatars.com/api/?name=${data.nickname}&background=fe2c55&color=fff&size=40'">
                     <div class="info">
-                        <div class="name">
-                            ${data.nickname}
-                            <span class="time">الآن</span>
-                        </div>
+                        <div class="name">${data.nickname}</div>
                         <div class="text">${data.text}</div>
                     </div>
                 </div>
-            `;
-
-            commentsContainer.insertAdjacentHTML('afterbegin', commentHTML);
-            commentBadge.textContent = stats.comments;
-
-            // Add to activity
+            `);
+            document.getElementById('commentBadge').textContent = stats.comments;
             addActivity('comment', data.nickname, data.text);
         });
 
-        socket.on('gift', (data) => {
+        socket.on('gift', function(data) {
             stats.gifts++;
             updateStats();
-
-            if (giftsContainer.querySelector('.empty-state')) {
-                giftsContainer.innerHTML = '';
-            }
-
-            const giftHTML = `
+            const container = document.getElementById('giftsContainer');
+            if (container.querySelector('.empty-state')) container.innerHTML = '';
+            container.insertAdjacentHTML('afterbegin', `
                 <div class="gift-item">
-                    <img class="avatar" src="${data.avatar}" onerror="this.src='https://ui-avatars.com/api/?name=${data.nickname}&background=ffd700&color=fff&size=40'">
+                    <img class="avatar" src="${data.avatar || 'https://ui-avatars.com/api/?name='+data.nickname+'&background=ffd700&color=fff&size=40'}" onerror="this.src='https://ui-avatars.com/api/?name=${data.nickname}&background=ffd700&color=fff&size=40'">
                     <div class="info">
                         <div class="name">${data.nickname}</div>
                         <div class="gift-details">
                             <span class="gift-name">🎁 ${data.gift}</span>
                             <span class="gift-count">×${data.count}</span>
-                            <span class="gift-diamonds">💎 ${data.diamonds}</span>
+                            <span style="color:#888;font-size:11px;">💎 ${data.diamonds}</span>
                         </div>
                     </div>
                 </div>
-            `;
-
-            giftsContainer.insertAdjacentHTML('afterbegin', giftHTML);
-            giftBadge.textContent = stats.gifts;
-
+            `);
+            document.getElementById('giftBadge').textContent = stats.gifts;
             addActivity('gift', data.nickname, `🎁 ${data.gift} ×${data.count}`);
         });
 
-        socket.on('follow', (data) => {
+        socket.on('follow', function(data) {
             stats.follows++;
             updateStats();
             addActivity('follow', data.nickname, 'متابعة جديدة');
         });
 
-        socket.on('share', (data) => {
+        socket.on('share', function(data) {
             stats.shares++;
             updateStats();
             addActivity('share', data.nickname, 'شارك البث');
         });
 
-        // Helper Functions
         function updateStats() {
-            miniComments.textContent = stats.comments;
-            miniGifts.textContent = stats.gifts;
-            miniFollows.textContent = stats.follows;
-            miniShares.textContent = stats.shares;
+            document.getElementById('miniComments').textContent = stats.comments;
+            document.getElementById('miniGifts').textContent = stats.gifts;
+            document.getElementById('miniFollows').textContent = stats.follows;
+            document.getElementById('miniShares').textContent = stats.shares;
         }
 
         function addActivity(type, name, action) {
-            if (activityContainer.querySelector('.empty-state')) {
-                activityContainer.innerHTML = '';
-            }
-
-            const icons = {
-                comment: 'comment',
-                gift: 'gift',
-                follow: 'follow',
-                share: 'share'
-            };
-
-            const colors = {
-                comment: '#fe2c55',
-                gift: '#ffd700',
-                follow: '#4ade80',
-                share: '#60a5fa'
-            };
-
-            const activityHTML = `
+            const container = document.getElementById('activityContainer');
+            if (container.querySelector('.empty-state')) container.innerHTML = '';
+            const icons = { comment:'comment', gift:'gift', follow:'follow', share:'share' };
+            container.insertAdjacentHTML('afterbegin', `
                 <div class="activity-item">
-                    <div class="icon ${type}">
-                        <i class="fas fa-${icons[type]}"></i>
-                    </div>
-                    <div class="info">
-                        <strong>${name}</strong>
-                        <span>${action}</span>
-                    </div>
+                    <div class="icon ${type}"><i class="fas fa-${icons[type]}"></i></div>
+                    <div class="info"><strong>${name}</strong> ${action}</div>
                     <span class="time">الآن</span>
                 </div>
-            `;
-
-            activityContainer.insertAdjacentHTML('afterbegin', activityHTML);
-
-            // Limit activity items
-            const items = activityContainer.querySelectorAll('.activity-item');
-            if (items.length > 50) {
-                items[items.length - 1].remove();
-            }
+            `);
         }
 
-        // Clean up old comments (keep last 100)
+        // Keep last 100 items
         setInterval(() => {
-            const comments = commentsContainer.querySelectorAll('.comment-item');
-            if (comments.length > 100) {
-                comments.forEach((el, i) => {
-                    if (i >= 100) el.remove();
-                });
-            }
-            const gifts = giftsContainer.querySelectorAll('.gift-item');
-            if (gifts.length > 50) {
-                gifts.forEach((el, i) => {
-                    if (i >= 50) el.remove();
-                });
-            }
+            ['commentsContainer','giftsContainer','activityContainer'].forEach(id => {
+                const el = document.getElementById(id);
+                const items = el.querySelectorAll('.comment-item, .gift-item, .activity-item');
+                if (items.length > 100) {
+                    items.forEach((item, i) => { if (i >= 100) item.remove(); });
+                }
+            });
         }, 10000);
     </script>
-
 </body>
 </html>
